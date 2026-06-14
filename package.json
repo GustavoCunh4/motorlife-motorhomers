@@ -4,6 +4,7 @@
   "description": "Site institucional e catálogo de motorhomes da Motorlife Motorhomers.",
   "main": "app.js",
   "scripts": {
+    "build": "node scripts/build.mjs",
     "start": "node server.mjs",
     "dev": "node server.mjs"
   },
