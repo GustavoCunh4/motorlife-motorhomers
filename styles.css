@@ -375,6 +375,79 @@ textarea:focus {
   font-weight: 650;
 }
 
+.origin-section {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.9fr) minmax(0, 1.1fr);
+  gap: clamp(32px, 6vw, 82px);
+  align-items: center;
+  background: var(--cream);
+}
+
+.origin-media {
+  overflow: hidden;
+  border-radius: var(--radius);
+  box-shadow: 0 18px 48px rgba(8, 26, 23, 0.14);
+}
+
+.origin-media img {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+
+.origin-copy {
+  max-width: 820px;
+}
+
+.origin-copy p:not(.eyebrow),
+.origin-marks span {
+  color: var(--muted);
+  font-size: 1.04rem;
+}
+
+.origin-copy p:not(.eyebrow) {
+  margin-bottom: 18px;
+}
+
+.origin-marks {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  margin-top: 30px;
+  border-top: 1px solid rgba(1, 84, 80, 0.16);
+  border-bottom: 1px solid rgba(1, 84, 80, 0.16);
+}
+
+.origin-marks div {
+  padding: 18px 18px 18px 0;
+  border-right: 1px solid rgba(1, 84, 80, 0.16);
+}
+
+.origin-marks div + div {
+  padding-left: 18px;
+}
+
+.origin-marks div:last-child {
+  border-right: 0;
+}
+
+.origin-marks strong,
+.origin-marks span {
+  display: block;
+}
+
+.origin-marks strong {
+  color: var(--green-900);
+  font-size: 1.1rem;
+  line-height: 1.15;
+}
+
+.origin-marks span {
+  margin-top: 7px;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
 .section {
   padding: clamp(72px, 10vw, 128px) clamp(18px, 5vw, 64px);
 }
@@ -733,6 +806,26 @@ textarea:focus {
   padding: clamp(44px, 7vw, 78px) clamp(18px, 5vw, 64px);
   color: var(--white);
   background: var(--green-900);
+}
+
+.contact-location {
+  display: grid;
+  gap: 4px;
+  margin-top: 18px;
+  color: rgba(255, 255, 255, 0.84);
+  font-style: normal;
+  font-weight: 750;
+}
+
+.contact-location a {
+  color: var(--white);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+}
+
+.contact-location span {
+  color: rgba(255, 255, 255, 0.72);
 }
 
 .site-footer {
@@ -1149,6 +1242,7 @@ textarea:focus {
 
   .hero,
   .split,
+  .origin-section,
   .contact-section {
     grid-template-columns: 1fr;
   }
@@ -1176,6 +1270,14 @@ textarea:focus {
 
   .contact-actions {
     justify-content: start;
+  }
+
+  .origin-media {
+    max-width: 620px;
+  }
+
+  .origin-media img {
+    aspect-ratio: 16 / 11;
   }
 
 }
@@ -1217,8 +1319,24 @@ textarea:focus {
   .fleet-grid,
   .routes .route-grid,
   .included-grid,
-  .specs {
+  .specs,
+  .origin-marks {
     grid-template-columns: 1fr;
+  }
+
+  .origin-media img {
+    aspect-ratio: 4 / 3;
+  }
+
+  .origin-marks div,
+  .origin-marks div + div {
+    padding: 14px 0;
+    border-right: 0;
+    border-bottom: 1px solid rgba(1, 84, 80, 0.16);
+  }
+
+  .origin-marks div:last-child {
+    border-bottom: 0;
   }
 
   .trust-band div {
