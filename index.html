@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Motorlife Motorhomers | Aluguel de motorhomes no Sul do Brasil</title>
+    <meta
+      name="description"
+      content="Aluguel de motorhomes em Porto Alegre para viagens pelo Brasil, Uruguai e Argentina. Frota pet friendly, CNH B, orçamento por WhatsApp e modelos para 4 a 6 passageiros."
+    />
+    <meta
+      name="keywords"
+      content="aluguel de motorhome Porto Alegre, motorhome RS, aluguel de campervan, viagem de motorhome, motorhome Serra Gaúcha, motorhome Uruguai"
+    />
+    <link rel="canonical" href="https://www.motorlife.com.br/" />
+    <link rel="icon" type="image/avif" href="assets/logo-motorlife-motorhomers.avif" />
+    <link rel="preload" href="assets/aguia.jpeg" as="image" />
+    <link rel="stylesheet" href="styles.css" />
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "Motorlife Motorhomers",
+        "url": "https://www.motorlife.com.br/",
+        "areaServed": ["Porto Alegre", "Rio Grande do Sul", "Brasil", "Uruguai", "Argentina"],
+        "sameAs": ["https://instagram.com/motorlife_rs"],
+        "telephone": "+55 51 99342-6537",
+        "description": "Aluguel de motorhomes em Porto Alegre para viagens nacionais e internacionais."
+      }
+    </script>
+  </head>
+  <body>
+    <header class="site-header" data-header>
+      <a class="brand" href="#inicio" aria-label="Motorlife Motorhomers">
+        <img src="assets/logo-motorlife-motorhomers.avif" alt="Motorlife Motorhomers" />
+      </a>
+      <nav class="main-nav" aria-label="Principal">
+        <a href="#frota">Frota</a>
+        <a href="#inclusos">Inclusos</a>
+        <a href="#como-funciona">Como funciona</a>
+        <a href="#roteiros">Roteiros</a>
+        <a href="#faq">FAQ</a>
+        <a href="#contato">Contato</a>
+      </nav>
+      <a class="header-action" data-whatsapp-link href="#" target="_blank" rel="noreferrer">Orçamento</a>
+      <button class="menu-toggle" type="button" data-menu-toggle aria-label="Abrir menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </header>
+
+    <main id="inicio">
+      <section class="hero">
+        <div class="hero-media" aria-hidden="true">
+          <img src="assets/aguia.jpeg" alt="" fetchpriority="high" decoding="async" />
+        </div>
+        <div class="hero-content">
+          <p class="eyebrow">Aluguel de motorhomes em Porto Alegre</p>
+          <h1>Seu lar sobre rodas, pronto para qualquer rota.</h1>
+          <p class="hero-copy">
+            Saia de Porto Alegre com conforto, autonomia e suporte para viajar pelo Brasil, Uruguai e Argentina.
+            Modelos para 4 a 6 passageiros, CNH B e estrutura pet friendly.
+          </p>
+          <div class="hero-actions">
+            <a class="btn primary" data-whatsapp-link href="#" target="_blank" rel="noreferrer">Solicitar orçamento</a>
+            <a class="btn secondary" href="#frota">Ver motorhomes</a>
+          </div>
+        </div>
+        <aside class="quick-quote" aria-label="Orçamento rápido">
+          <h2>Orçamento rápido</h2>
+          <form data-quote-form>
+            <label>
+              Retirada
+              <input name="pickup" type="date" required />
+            </label>
+            <label>
+              Devolução
+              <input name="return" type="date" required />
+            </label>
+            <label>
+              Motorhome
+              <select name="vehicle" data-vehicle-select>
+                <option value="A definir">A definir</option>
+              </select>
+            </label>
+            <label>
+              Passageiros
+              <select name="passengers" required>
+                <option value="2 pessoas">2 pessoas</option>
+                <option value="3 pessoas">3 pessoas</option>
+                <option value="4 pessoas" selected>4 pessoas</option>
+                <option value="5 pessoas">5 pessoas</option>
+                <option value="6 pessoas">6 pessoas</option>
+              </select>
+            </label>
+            <label>
+              Roteiro
+              <input name="route" type="text" placeholder="Serra Gaúcha, Uruguai..." />
+            </label>
+            <label>
+              Tipo de viagem
+              <select name="tripType">
+                <option value="Nacional">Nacional</option>
+                <option value="Internacional">Internacional</option>
+                <option value="Ainda não sei">Ainda não sei</option>
+              </select>
+            </label>
+            <label>
+              Vai levar pet?
+              <select name="pet">
+                <option value="Não">Não</option>
+                <option value="Sim">Sim</option>
+                <option value="Talvez">Talvez</option>
+              </select>
+            </label>
+            <button class="btn primary full" type="submit">Enviar pelo WhatsApp</button>
+          </form>
+        </aside>
+      </section>
+
+      <section class="trust-band" aria-label="Diferenciais">
+        <div>
+          <strong>CNH B</strong>
+          <span>Todos os modelos listados</span>
+        </div>
+        <div>
+          <strong>Pet friendly</strong>
+          <span>Viagem com toda a família</span>
+        </div>
+        <div>
+          <strong>Internacional</strong>
+          <span>Brasil, Uruguai e Argentina</span>
+        </div>
+        <div>
+          <strong>WhatsApp direto</strong>
+          <span>Atendimento consultivo</span>
+        </div>
+      </section>
+
+      <section class="section fleet-section" id="frota">
+        <div class="section-head">
+          <p class="eyebrow">Catálogo atual</p>
+          <h2>Escolha o motorhome pelo estilo da viagem.</h2>
+          <p>
+            Modelos compactos para casais e famílias menores, opções automáticas e motorhomes maiores para
+            grupos de até 6 passageiros.
+          </p>
+        </div>
+        <div class="filters" aria-label="Filtros da frota">
+          <button class="filter active" type="button" data-filter="all">Todos</button>
+          <button class="filter" type="button" data-filter="4">4 passageiros</button>
+          <button class="filter" type="button" data-filter="5">5 passageiros</button>
+          <button class="filter" type="button" data-filter="6">6 passageiros</button>
+        </div>
+        <div class="fleet-grid" data-fleet-grid></div>
+      </section>
+
+      <section class="section compare-section" id="comparar">
+        <div class="section-head">
+          <p class="eyebrow">Comparador</p>
+          <h2>Compare rapidamente antes de pedir orçamento.</h2>
+          <p>
+            Uma visão objetiva para escolher por capacidade, valor base, chassi e perfil de viagem.
+          </p>
+        </div>
+        <div class="compare-table-wrap">
+          <table class="compare-table">
+            <thead>
+              <tr>
+                <th>Motorhome</th>
+                <th>Valor base</th>
+                <th>Passageiros</th>
+                <th>Modelo</th>
+                <th>CNH</th>
+                <th>Perfil ideal</th>
+              </tr>
+            </thead>
+            <tbody data-compare-body></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section split" id="como-funciona">
+        <div class="split-copy">
+          <p class="eyebrow">Da cotação à estrada</p>
+          <h2>Um processo claro para quem está alugando pela primeira vez.</h2>
+          <p>
+            O site precisa vender liberdade, mas também remover dúvidas práticas. O fluxo abaixo transforma
+            curiosidade em reserva com menos atrito.
+          </p>
+        </div>
+        <div class="steps">
+          <article>
+            <span>01</span>
+            <h3>Conte a viagem</h3>
+            <p>Datas, passageiros, destino e preferências entram no orçamento rápido.</p>
+          </article>
+          <article>
+            <span>02</span>
+            <h3>Compare a frota</h3>
+            <p>Capacidade, preço base, CNH e perfil de uso ficam claros antes do contato.</p>
+          </article>
+          <article>
+            <span>03</span>
+            <h3>Receba a proposta</h3>
+            <p>A equipe confirma disponibilidade, regras, documentação e valores finais.</p>
+          </article>
+          <article>
+            <span>04</span>
+            <h3>Retire e viaje</h3>
+            <p>Briefing de uso, checklist de entrega e suporte durante o roteiro.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section included-section" id="inclusos">
+        <div class="section-head">
+          <p class="eyebrow">O que está incluso</p>
+          <h2>Estrutura para viajar com autonomia, não só um veículo.</h2>
+          <p>
+            A proposta deve confirmar a configuração exata de cada motorhome, mas estes são os itens que o cliente espera entender antes de fechar.
+          </p>
+        </div>
+        <div class="included-grid">
+          <article>
+            <h3>Cozinha equipada</h3>
+            <p>Estrutura para preparar refeições na rota, com pia, fogão e itens básicos conforme o modelo.</p>
+          </article>
+          <article>
+            <h3>Conforto interno</h3>
+            <p>Espaço de descanso, mesa, armários e configuração para dormir de acordo com a capacidade escolhida.</p>
+          </article>
+          <article>
+            <h3>Briefing de retirada</h3>
+            <p>Orientação de uso, checklist e explicação dos sistemas antes de sair de Porto Alegre.</p>
+          </article>
+          <article>
+            <h3>Viagens com pet</h3>
+            <p>Todos os modelos do catálogo são pet friendly, com confirmação de regras na proposta.</p>
+          </article>
+          <article>
+            <h3>Rotas internacionais</h3>
+            <p>Viagens para Uruguai e Argentina podem ser planejadas com antecedência e documentação adequada.</p>
+          </article>
+          <article>
+            <h3>Atendimento por WhatsApp</h3>
+            <p>Contato direto para disponibilidade, documentação, caução, contrato e dúvidas antes da reserva.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="section routes" id="roteiros">
+        <div class="section-head">
+          <p class="eyebrow">Inspiração de viagem</p>
+          <h2>Roteiros que combinam com motorhome.</h2>
+        </div>
+        <div class="route-grid">
+          <article>
+            <span>3 a 5 dias</span>
+            <h3>Serra Gaúcha</h3>
+            <p>Boa para primeira experiência: Gramado, Canela, Bento Gonçalves e estradas cênicas com deslocamentos curtos.</p>
+            <a data-route-quote="Serra Gaúcha" href="#">Orçar essa rota</a>
+          </article>
+          <article>
+            <span>5 a 8 dias</span>
+            <h3>Aparados da Serra</h3>
+            <p>Ideal para quem busca natureza: Cambará do Sul, cânions, trilhas e pousos próximos ao roteiro.</p>
+            <a data-route-quote="Aparados da Serra" href="#">Orçar essa rota</a>
+          </article>
+          <article>
+            <span>7+ dias</span>
+            <h3>Uruguai e Argentina</h3>
+            <p>Para viagens internacionais com mais tempo, planejamento de fronteira e autonomia no trajeto.</p>
+            <a data-route-quote="Uruguai e Argentina" href="#">Orçar essa rota</a>
+          </article>
+          <article>
+            <span>4 a 7 dias</span>
+            <h3>Litoral RS e SC</h3>
+            <p>Rota para praia, descanso e paradas flexíveis entre litoral gaúcho e catarinense.</p>
+            <a data-route-quote="Litoral RS e SC" href="#">Orçar essa rota</a>
+          </article>
+          <article>
+            <span>5 a 10 dias</span>
+            <h3>Vale dos Vinhedos</h3>
+            <p>Viagem gastronômica com base em Bento Gonçalves, Garibaldi, Pinto Bandeira e arredores.</p>
+            <a data-route-quote="Vale dos Vinhedos" href="#">Orçar essa rota</a>
+          </article>
+          <article>
+            <span>Sob medida</span>
+            <h3>Roteiro personalizado</h3>
+            <p>Para quem já tem destino em mente e quer validar modelo, datas, documentação e disponibilidade.</p>
+            <a data-route-quote="Roteiro personalizado" href="#">Orçar essa rota</a>
+          </article>
+        </div>
+      </section>
+
+      <section class="section faq" id="faq">
+        <div class="section-head">
+          <p class="eyebrow">Dúvidas frequentes</p>
+          <h2>Informações que reduzem insegurança antes do orçamento.</h2>
+        </div>
+        <div class="faq-list">
+          <details open>
+            <summary>Precisa de habilitação especial?</summary>
+            <p>Os modelos do catálogo estão indicados para CNH B, conforme as informações atuais fornecidas.</p>
+          </details>
+          <details>
+            <summary>Pode viajar com pets?</summary>
+            <p>Sim. Todos os modelos listados foram estruturados como pet friendly.</p>
+          </details>
+          <details>
+            <summary>É possível viajar para fora do Brasil?</summary>
+            <p>Sim. A frota contempla viagens nacionais e internacionais, com confirmação de documentação na proposta.</p>
+          </details>
+          <details>
+            <summary>O preço é por diária?</summary>
+            <p>O valor exibido é o preço base informado no catálogo. A proposta final depende de datas, duração e roteiro.</p>
+          </details>
+          <details>
+            <summary>Existe caução ou contrato?</summary>
+            <p>Sim. A equipe deve confirmar caução, contrato, regras de uso e condições de retirada na proposta.</p>
+          </details>
+          <details>
+            <summary>Posso cruzar fronteira com o motorhome?</summary>
+            <p>Sim, desde que a viagem internacional seja informada antes da reserva para organizar documentação e regras da rota.</p>
+          </details>
+          <details>
+            <summary>Qual motorhome escolher?</summary>
+            <p>Use o comparador por passageiros e perfil de viagem. Para dúvidas, envie datas, destino e quantidade de pessoas pelo orçamento rápido.</p>
+          </details>
+          <details>
+            <summary>O que preciso informar para receber uma proposta precisa?</summary>
+            <p>Datas, passageiros, destino, cidade de retirada/devolução, se haverá pet e se a viagem será nacional ou internacional.</p>
+          </details>
+        </div>
+      </section>
+
+      <section class="contact-section" id="contato">
+        <div>
+          <p class="eyebrow">Contato</p>
+          <h2>Vamos desenhar a próxima rota?</h2>
+          <p>Atendimento direto pelo WhatsApp e Instagram oficial.</p>
+        </div>
+        <div class="contact-actions">
+          <a class="btn primary" data-whatsapp-link href="#" target="_blank" rel="noreferrer">Chamar no WhatsApp</a>
+          <a class="btn secondary" href="https://instagram.com/motorlife_rs" target="_blank" rel="noreferrer">Instagram @motorlife_rs</a>
+        </div>
+      </section>
+    </main>
+
+    <a class="whatsapp-float" data-whatsapp-link href="#" target="_blank" rel="noreferrer" aria-label="WhatsApp Motorlife">
+      <span>WhatsApp</span>
+    </a>
+
+    <footer class="site-footer">
+      <img src="assets/logo-motorlife-motorhomers.avif" alt="Motorlife Motorhomers" />
+      <p>Motorlife Motorhomers - aluguel de motorhomes para viagens nacionais e internacionais.</p>
+      <div>
+        <a href="https://instagram.com/motorlife_rs" target="_blank" rel="noreferrer">Instagram</a>
+        <a data-whatsapp-link href="#" target="_blank" rel="noreferrer">WhatsApp</a>
+        <button class="admin-link" type="button" data-admin-open>Admin</button>
+      </div>
+    </footer>
+
+    <dialog class="admin-dialog" data-admin-dialog>
+      <div class="admin-shell">
+        <div class="admin-head">
+          <div>
+            <p class="eyebrow">Admin</p>
+            <h2>Catálogo da frota</h2>
+          </div>
+          <button class="icon-button" type="button" data-admin-close aria-label="Fechar">×</button>
+        </div>
+        <form class="pin-form" data-pin-form>
+          <label>
+            PIN de acesso
+            <input type="password" name="pin" inputmode="numeric" placeholder="Digite o PIN" required />
+          </label>
+          <button class="btn primary" type="submit">Entrar</button>
+        </form>
+        <form class="catalog-editor" data-catalog-editor hidden></form>
+      </div>
+    </dialog>
+
+    <dialog class="gallery-dialog" data-gallery-dialog>
+      <div class="gallery-shell">
+        <button class="icon-button gallery-close" type="button" data-gallery-close aria-label="Fechar galeria">×</button>
+        <img data-gallery-image alt="" />
+        <div class="gallery-meta">
+          <h2 data-gallery-title></h2>
+          <div class="gallery-thumbs" data-gallery-thumbs></div>
+        </div>
+      </div>
+    </dialog>
+
+    <dialog class="details-dialog" data-details-dialog>
+      <div class="details-shell">
+        <button class="icon-button details-close" type="button" data-details-close aria-label="Fechar detalhes">×</button>
+        <div class="details-media" data-details-media></div>
+        <div class="details-content">
+          <p class="eyebrow">Detalhes do motorhome</p>
+          <h2 data-details-title></h2>
+          <p data-details-summary></p>
+          <dl class="details-specs" data-details-specs></dl>
+          <div>
+            <h3>Indicado para</h3>
+            <p data-details-profile></p>
+          </div>
+          <div>
+            <h3>Itens e diferenciais</h3>
+            <ul data-details-features></ul>
+          </div>
+          <div class="details-actions">
+            <button class="btn primary" type="button" data-details-quote>Orçar este modelo</button>
+            <button class="btn secondary" type="button" data-details-gallery>Ver galeria</button>
+          </div>
+        </div>
+      </div>
+    </dialog>
+
+    <script src="app.js"></script>
+  </body>
+</html>

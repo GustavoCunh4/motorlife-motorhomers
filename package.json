@@ -1,0 +1,13 @@
+{
+  "name": "motorlife-motorhomers",
+  "version": "1.0.0",
+  "description": "Site institucional e catálogo de motorhomes da Motorlife Motorhomers.",
+  "main": "app.js",
+  "scripts": {
+    "start": "node server.mjs",
+    "dev": "node server.mjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
