@@ -108,7 +108,7 @@ const header = document.querySelector("[data-header]");
 const menuToggle = document.querySelector("[data-menu-toggle]");
 const adminDialog = document.querySelector("[data-admin-dialog]");
 const adminOpen = document.querySelector("[data-admin-open]");
-const adminClose = document.querySelector("[data-admin-close]");
+const adminCloseButtons = document.querySelectorAll("[data-admin-close]");
 const pinForm = document.querySelector("[data-pin-form]");
 const catalogEditor = document.querySelector("[data-catalog-editor]");
 const galleryDialog = document.querySelector("[data-gallery-dialog]");
@@ -511,7 +511,9 @@ function setupAdmin() {
     pinForm.reset();
   });
 
-  adminClose.addEventListener("click", () => adminDialog.close());
+  adminCloseButtons.forEach((button) => {
+    button.addEventListener("click", () => adminDialog.close());
+  });
 
   pinForm.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -693,7 +695,9 @@ function renderCatalogEditor() {
         <button class="btn secondary" type="button" data-import-catalog>Importar JSON</button>
       </div>
     </div>
-    ${catalog.map(renderEditorCard).join("")}
+    <div class="editor-list">
+      ${catalog.map(renderEditorCard).join("")}
+    </div>
     <div class="editor-actions">
       <button class="btn primary" type="submit">Salvar catálogo</button>
       <button class="btn secondary" type="button" data-reset-catalog>Restaurar original</button>
@@ -713,38 +717,52 @@ function renderEditorCard(vehicle) {
         </div>
         <img src="${escapeHtml(images[0])}" alt="" loading="lazy">
       </div>
-      <label>
-        Nome
-        <input name="${vehicle.id}.name" value="${escapeHtml(vehicle.name)}" required>
-      </label>
-      <label>
-        Preço
-        <input name="${vehicle.id}.price" type="number" min="0" step="1" value="${Number(vehicle.price) || 0}" required>
-      </label>
-      <label>
-        Passageiros
-        <input name="${vehicle.id}.passengers" type="number" min="1" max="12" value="${Number(vehicle.passengers) || 1}" required>
-      </label>
-      <label>
-        Pet friendly
-        <select name="${vehicle.id}.petFriendly">
-          <option value="true" ${vehicle.petFriendly ? "selected" : ""}>Sim</option>
-          <option value="false" ${!vehicle.petFriendly ? "selected" : ""}>Não</option>
-        </select>
-      </label>
-      <label class="wide">
-        Modelo
-        <input name="${vehicle.id}.model" value="${escapeHtml(vehicle.model)}" required>
-      </label>
-      <label>
-        Habilitação
-        <input name="${vehicle.id}.license" value="${escapeHtml(vehicle.license)}" required>
-      </label>
-      <label>
-        Viagem
-        <input name="${vehicle.id}.travel" value="${escapeHtml(vehicle.travel)}" required>
-      </label>
-      <div class="wide photo-manager" data-photo-dropzone="${escapeHtml(vehicle.id)}">
+
+      <div class="editor-section editor-section-main">
+        <div class="editor-section-heading">
+          <span>01</span>
+          <strong>Dados principais</strong>
+        </div>
+        <div class="editor-fields">
+          <label>
+            Nome
+            <input name="${vehicle.id}.name" value="${escapeHtml(vehicle.name)}" required>
+          </label>
+          <label>
+            Pre&ccedil;o
+            <input name="${vehicle.id}.price" type="number" min="0" step="1" value="${Number(vehicle.price) || 0}" required>
+          </label>
+          <label>
+            Passageiros
+            <input name="${vehicle.id}.passengers" type="number" min="1" max="12" value="${Number(vehicle.passengers) || 1}" required>
+          </label>
+          <label>
+            Pet friendly
+            <select name="${vehicle.id}.petFriendly">
+              <option value="true" ${vehicle.petFriendly ? "selected" : ""}>Sim</option>
+              <option value="false" ${!vehicle.petFriendly ? "selected" : ""}>N&atilde;o</option>
+            </select>
+          </label>
+          <label>
+            Modelo
+            <input name="${vehicle.id}.model" value="${escapeHtml(vehicle.model)}" required>
+          </label>
+          <label>
+            Habilita&ccedil;&atilde;o
+            <input name="${vehicle.id}.license" value="${escapeHtml(vehicle.license)}" required>
+          </label>
+          <label class="field-wide">
+            Viagem
+            <input name="${vehicle.id}.travel" value="${escapeHtml(vehicle.travel)}" required>
+          </label>
+        </div>
+      </div>
+
+      <div class="editor-section photo-manager" data-photo-dropzone="${escapeHtml(vehicle.id)}">
+        <div class="editor-section-heading">
+          <span>02</span>
+          <strong>Galeria do motorhome</strong>
+        </div>
         <div class="photo-manager-head">
           <div>
             <strong>Fotos do motorhome</strong>
@@ -764,18 +782,30 @@ function renderEditorCard(vehicle) {
           <button class="btn secondary" type="button" data-add-photo-url="${escapeHtml(vehicle.id)}">Adicionar URL</button>
         </div>
       </div>
-      <label class="wide">
-        Perfil ideal
-        <textarea name="${vehicle.id}.profile" rows="3" required>${escapeHtml(vehicle.profile)}</textarea>
-      </label>
-      <label class="wide photos-field">
-        Itens e diferenciais
-        <textarea name="${vehicle.id}.features" rows="4" required>${escapeHtml(vehicle.features.join("\n"))}</textarea>
-        <small>Use um item por linha.</small>
-      </label>
-      <button class="btn secondary danger" type="button" data-remove-catalog="${escapeHtml(vehicle.id)}">
-        Remover do catálogo
-      </button>
+
+      <div class="editor-section editor-section-copy">
+        <div class="editor-section-heading">
+          <span>03</span>
+          <strong>Texto comercial</strong>
+        </div>
+        <div class="editor-fields editor-fields-copy">
+          <label>
+            Perfil ideal
+            <textarea name="${vehicle.id}.profile" rows="3" required>${escapeHtml(vehicle.profile)}</textarea>
+          </label>
+          <label class="photos-field">
+            Itens e diferenciais
+            <textarea name="${vehicle.id}.features" rows="4" required>${escapeHtml(vehicle.features.join("\n"))}</textarea>
+            <small>Use um item por linha.</small>
+          </label>
+        </div>
+      </div>
+
+      <div class="editor-card-footer">
+        <button class="btn secondary danger" type="button" data-remove-catalog="${escapeHtml(vehicle.id)}">
+          Remover do cat&aacute;logo
+        </button>
+      </div>
     </section>
   `;
 }
