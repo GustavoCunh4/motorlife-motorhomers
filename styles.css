@@ -18,6 +18,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -558,15 +562,63 @@ textarea:focus {
   background: var(--green-900);
 }
 
-.vehicle-card img {
+.vehicle-card figure > img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   transition: transform 260ms ease;
 }
 
-.vehicle-card:hover img {
+.vehicle-card:hover figure > img {
   transform: scale(1.035);
+}
+
+.gallery-nav {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  color: var(--white);
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  border-radius: 999px;
+  background: rgba(1, 38, 34, 0.72);
+  cursor: pointer;
+  font-size: 1.8rem;
+  line-height: 1;
+  transform: translateY(-50%);
+}
+
+.gallery-nav:hover {
+  background: rgba(1, 61, 58, 0.9);
+}
+
+.gallery-nav.prev {
+  left: 12px;
+}
+
+.gallery-nav.next {
+  right: 12px;
+}
+
+.gallery-counter {
+  position: absolute;
+  left: 14px;
+  top: 14px;
+  z-index: 2;
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  padding: 0 10px;
+  color: var(--white);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: var(--radius);
+  background: rgba(1, 61, 58, 0.78);
+  font-size: 0.82rem;
+  font-weight: 900;
 }
 
 .vehicle-card .price {
@@ -882,7 +934,7 @@ textarea:focus {
 }
 
 .admin-dialog {
-  width: min(960px, calc(100vw - 28px));
+  width: min(1180px, calc(100vw - 28px));
   max-height: min(820px, calc(100vh - 28px));
   padding: 0;
   border: 0;
@@ -1107,7 +1159,7 @@ textarea:focus {
 .catalog-editor {
   max-height: 62vh;
   overflow: auto;
-  padding-right: 6px;
+  padding: 0 6px 88px 0;
 }
 
 .editor-intro {
@@ -1184,6 +1236,122 @@ textarea:focus {
 
 .photos-field small {
   font-size: 0.78rem;
+}
+
+.photo-manager {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border: 1px dashed rgba(1, 84, 80, 0.28);
+  border-radius: var(--radius);
+  background: rgba(1, 84, 80, 0.04);
+}
+
+.photo-manager-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.photo-manager-head strong,
+.photo-manager-head span {
+  display: block;
+}
+
+.photo-manager-head span {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.file-button {
+  position: relative;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.file-button input {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.editor-photo-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.editor-photo-item {
+  overflow: hidden;
+  border: 1px solid rgba(1, 84, 80, 0.14);
+  border-radius: var(--radius);
+  background: var(--white);
+  cursor: grab;
+}
+
+.editor-photo-item:active {
+  cursor: grabbing;
+}
+
+.editor-photo-item img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  background: var(--green-900);
+}
+
+.editor-photo-meta {
+  padding: 10px;
+}
+
+.editor-photo-meta span,
+.editor-photo-meta small {
+  display: block;
+}
+
+.editor-photo-meta span {
+  color: var(--green-900);
+  font-weight: 900;
+}
+
+.editor-photo-meta small {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+
+.editor-photo-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 10px 10px;
+}
+
+.editor-photo-actions button {
+  min-height: 30px;
+  padding: 0 8px;
+  color: var(--green-900);
+  border: 1px solid rgba(1, 84, 80, 0.16);
+  border-radius: var(--radius);
+  background: rgba(1, 84, 80, 0.06);
+  cursor: pointer;
+  font-size: 0.72rem;
+  font-weight: 850;
+}
+
+.editor-photo-actions button:hover {
+  color: var(--white);
+  background: var(--green-800);
+}
+
+.photo-url-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
 }
 
 .editor-actions {
@@ -1388,6 +1556,19 @@ textarea:focus {
 
   .editor-intro {
     align-items: stretch;
+  }
+
+  .photo-manager-head,
+  .photo-url-row {
+    grid-template-columns: 1fr;
+  }
+
+  .photo-manager-head {
+    display: grid;
+  }
+
+  .editor-photo-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .gallery-meta {

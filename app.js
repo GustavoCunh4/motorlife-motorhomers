@@ -231,6 +231,20 @@ function renderFleet() {
   fleetGrid.querySelectorAll("[data-details-open]").forEach((button) => {
     button.addEventListener("click", () => openDetails(button.dataset.detailsOpen));
   });
+
+  fleetGrid.querySelectorAll("[data-card-gallery]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const card = button.closest("[data-vehicle-card]");
+      const vehicle = catalog.find((item) => item.id === button.dataset.cardGallery);
+      if (!card || !vehicle) return;
+
+      const images = getVehicleImages(vehicle);
+      const current = Number(card.dataset.currentImage) || 0;
+      const direction = button.dataset.galleryDirection === "next" ? 1 : -1;
+      const next = (current + direction + images.length) % images.length;
+      setCardImage(card, vehicle, next);
+    });
+  });
 }
 
 function renderVehicleCard(vehicle) {
@@ -250,9 +264,14 @@ function renderVehicleCard(vehicle) {
     : "";
 
   return `
-    <article class="vehicle-card">
-      <figure>
-        <img src="${escapeHtml(cover)}" alt="Motorhome ${escapeHtml(vehicle.name)}" loading="lazy">
+    <article class="vehicle-card" data-vehicle-card="${escapeHtml(vehicle.id)}" data-current-image="0">
+      <figure class="vehicle-gallery">
+        <img data-card-image src="${escapeHtml(cover)}" alt="Motorhome ${escapeHtml(vehicle.name)}" loading="lazy">
+        ${images.length > 1 ? `
+          <button class="gallery-nav prev" type="button" data-card-gallery="${escapeHtml(vehicle.id)}" data-gallery-direction="prev" aria-label="Foto anterior de ${escapeHtml(vehicle.name)}">‹</button>
+          <button class="gallery-nav next" type="button" data-card-gallery="${escapeHtml(vehicle.id)}" data-gallery-direction="next" aria-label="Próxima foto de ${escapeHtml(vehicle.name)}">›</button>
+          <span class="gallery-counter" data-card-counter>1 / ${images.length}</span>
+        ` : ""}
         <figcaption class="price">${currency.format(Number(vehicle.price) || 0)} / dia</figcaption>
         ${images.length > 1 ? `
           <button class="photo-count" type="button" data-gallery-open="${escapeHtml(vehicle.id)}" data-gallery-index="0">
@@ -283,6 +302,23 @@ function renderVehicleCard(vehicle) {
       </div>
     </article>
   `;
+}
+
+function setCardImage(card, vehicle, index) {
+  const images = getVehicleImages(vehicle);
+  const image = images[index];
+  const imageElement = card.querySelector("[data-card-image]");
+  const counter = card.querySelector("[data-card-counter]");
+
+  if (!imageElement || !image) return;
+
+  card.dataset.currentImage = String(index);
+  imageElement.src = image;
+  imageElement.alt = `Motorhome ${vehicle.name}`;
+
+  if (counter) {
+    counter.textContent = `${index + 1} / ${images.length}`;
+  }
 }
 
 function renderCompareTable() {
@@ -494,22 +530,7 @@ function setupAdmin() {
 
   catalogEditor.addEventListener("submit", (event) => {
     event.preventDefault();
-    const form = new FormData(catalogEditor);
-
-    catalog = catalog.map((vehicle) => ({
-      ...vehicle,
-      name: clean(form.get(`${vehicle.id}.name`), vehicle.name),
-      price: Number(form.get(`${vehicle.id}.price`)) || vehicle.price,
-      model: clean(form.get(`${vehicle.id}.model`), vehicle.model),
-      passengers: Number(form.get(`${vehicle.id}.passengers`)) || vehicle.passengers,
-      license: clean(form.get(`${vehicle.id}.license`), vehicle.license),
-      travel: clean(form.get(`${vehicle.id}.travel`), vehicle.travel),
-      images: parseImages(form.get(`${vehicle.id}.images`), getVehicleImages(vehicle)),
-      profile: clean(form.get(`${vehicle.id}.profile`), vehicle.profile),
-      features: parseLines(form.get(`${vehicle.id}.features`), vehicle.features),
-      petFriendly: form.get(`${vehicle.id}.petFriendly`) === "true",
-    }));
-
+    syncCatalogFromEditor();
     saveCatalog();
     renderFleet();
     renderCompareTable();
@@ -520,6 +541,7 @@ function setupAdmin() {
   catalogEditor.addEventListener("click", (event) => {
     const add = event.target.closest("[data-add-catalog]");
     if (add) {
+      syncCatalogFromEditor();
       const id = `novo-${Date.now()}`;
       catalog.push({
         id,
@@ -544,12 +566,25 @@ function setupAdmin() {
 
     const remove = event.target.closest("[data-remove-catalog]");
     if (remove) {
+      syncCatalogFromEditor();
       catalog = catalog.filter((vehicle) => vehicle.id !== remove.dataset.removeCatalog);
       saveCatalog();
       renderFleet();
       renderCompareTable();
       populateVehicleSelect();
       renderCatalogEditor();
+      return;
+    }
+
+    const photoAction = event.target.closest("[data-photo-action]");
+    if (photoAction) {
+      handlePhotoAction(photoAction);
+      return;
+    }
+
+    const photoUrlButton = event.target.closest("[data-add-photo-url]");
+    if (photoUrlButton) {
+      addPhotoUrl(photoUrlButton.dataset.addPhotoUrl);
       return;
     }
 
@@ -592,6 +627,55 @@ function setupAdmin() {
     populateVehicleSelect();
     renderCatalogEditor();
   });
+
+  catalogEditor.addEventListener("change", (event) => {
+    const input = event.target.closest("[data-photo-upload]");
+    if (!input || !input.files?.length) return;
+
+    addPhotoFiles(input.dataset.photoUpload, input.files);
+    input.value = "";
+  });
+
+  catalogEditor.addEventListener("dragstart", (event) => {
+    const item = event.target.closest("[data-photo-index]");
+    if (!item) return;
+
+    event.dataTransfer.setData("text/plain", JSON.stringify({
+      vehicleId: item.dataset.photoVehicle,
+      index: Number(item.dataset.photoIndex),
+    }));
+  });
+
+  catalogEditor.addEventListener("dragover", (event) => {
+    if (event.target.closest("[data-photo-dropzone], [data-photo-index]")) {
+      event.preventDefault();
+    }
+  });
+
+  catalogEditor.addEventListener("drop", (event) => {
+    const dropzone = event.target.closest("[data-photo-dropzone]");
+    const targetItem = event.target.closest("[data-photo-index]");
+    if (!dropzone && !targetItem) return;
+
+    event.preventDefault();
+    const vehicleId = targetItem?.dataset.photoVehicle || dropzone?.dataset.photoDropzone;
+
+    if (event.dataTransfer.files?.length) {
+      addPhotoFiles(vehicleId, event.dataTransfer.files);
+      return;
+    }
+
+    const payload = event.dataTransfer.getData("text/plain");
+    if (!payload) return;
+
+    try {
+      const { vehicleId: sourceVehicleId, index: fromIndex } = JSON.parse(payload);
+      if (sourceVehicleId !== vehicleId || !targetItem) return;
+      movePhoto(vehicleId, fromIndex, Number(targetItem.dataset.photoIndex));
+    } catch {
+      // Ignore drops from outside this editor.
+    }
+  });
 }
 
 function renderCatalogEditor() {
@@ -625,7 +709,7 @@ function renderEditorCard(vehicle) {
       <div class="editor-title">
         <div>
           <h3>${escapeHtml(vehicle.name)}</h3>
-          <p>${images.length} ${images.length === 1 ? "foto" : "fotos"}</p>
+          <p>${images.length} ${images.length === 1 ? "foto cadastrada" : "fotos cadastradas"}</p>
         </div>
         <img src="${escapeHtml(images[0])}" alt="" loading="lazy">
       </div>
@@ -660,11 +744,26 @@ function renderEditorCard(vehicle) {
         Viagem
         <input name="${vehicle.id}.travel" value="${escapeHtml(vehicle.travel)}" required>
       </label>
-      <label class="wide photos-field">
-        Fotos do motorhome
-        <textarea name="${vehicle.id}.images" rows="4" required>${escapeHtml(images.join("\n"))}</textarea>
-        <small>Use uma imagem por linha. Pode ser um arquivo em <strong>assets/</strong> ou uma URL.</small>
-      </label>
+      <div class="wide photo-manager" data-photo-dropzone="${escapeHtml(vehicle.id)}">
+        <div class="photo-manager-head">
+          <div>
+            <strong>Fotos do motorhome</strong>
+            <span>Arraste para reordenar. A primeira foto vira a capa do card.</span>
+          </div>
+          <label class="btn secondary file-button">
+            Importar fotos
+            <input data-photo-upload="${escapeHtml(vehicle.id)}" type="file" accept="image/*" multiple>
+          </label>
+        </div>
+        <textarea class="photos-data" name="${vehicle.id}.images" hidden>${escapeHtml(images.join("\n"))}</textarea>
+        <div class="editor-photo-grid">
+          ${images.map((image, index) => renderEditorPhoto(vehicle, image, index, images.length)).join("")}
+        </div>
+        <div class="photo-url-row">
+          <input data-photo-url="${escapeHtml(vehicle.id)}" type="url" placeholder="Colar URL da foto ou caminho em assets/">
+          <button class="btn secondary" type="button" data-add-photo-url="${escapeHtml(vehicle.id)}">Adicionar URL</button>
+        </div>
+      </div>
       <label class="wide">
         Perfil ideal
         <textarea name="${vehicle.id}.profile" rows="3" required>${escapeHtml(vehicle.profile)}</textarea>
@@ -679,6 +778,170 @@ function renderEditorCard(vehicle) {
       </button>
     </section>
   `;
+}
+
+function renderEditorPhoto(vehicle, image, index, total) {
+  return `
+    <article class="editor-photo-item" draggable="true" data-photo-vehicle="${escapeHtml(vehicle.id)}" data-photo-index="${index}">
+      <img src="${escapeHtml(image)}" alt="Foto ${index + 1} de ${escapeHtml(vehicle.name)}" loading="lazy">
+      <div class="editor-photo-meta">
+        <span>${index === 0 ? "Capa" : `Foto ${index + 1}`}</span>
+        <small>${escapeHtml(shortenImageLabel(image))}</small>
+      </div>
+      <div class="editor-photo-actions">
+        ${index > 0 ? `<button type="button" data-photo-action="cover" data-photo-vehicle="${escapeHtml(vehicle.id)}" data-photo-index="${index}">Usar capa</button>` : ""}
+        ${index > 0 ? `<button type="button" data-photo-action="left" data-photo-vehicle="${escapeHtml(vehicle.id)}" data-photo-index="${index}" aria-label="Mover foto para esquerda">←</button>` : ""}
+        ${index < total - 1 ? `<button type="button" data-photo-action="right" data-photo-vehicle="${escapeHtml(vehicle.id)}" data-photo-index="${index}" aria-label="Mover foto para direita">→</button>` : ""}
+        <button type="button" data-photo-action="remove" data-photo-vehicle="${escapeHtml(vehicle.id)}" data-photo-index="${index}">Remover</button>
+      </div>
+    </article>
+  `;
+}
+
+function syncCatalogFromEditor() {
+  if (catalogEditor.hidden) return;
+
+  const form = new FormData(catalogEditor);
+
+  catalog = catalog.map((vehicle) => ({
+    ...vehicle,
+    name: clean(form.get(`${vehicle.id}.name`), vehicle.name),
+    price: Number(form.get(`${vehicle.id}.price`)) || vehicle.price,
+    model: clean(form.get(`${vehicle.id}.model`), vehicle.model),
+    passengers: Number(form.get(`${vehicle.id}.passengers`)) || vehicle.passengers,
+    license: clean(form.get(`${vehicle.id}.license`), vehicle.license),
+    travel: clean(form.get(`${vehicle.id}.travel`), vehicle.travel),
+    images: parseImages(form.get(`${vehicle.id}.images`), getVehicleImages(vehicle)),
+    profile: clean(form.get(`${vehicle.id}.profile`), vehicle.profile),
+    features: parseLines(form.get(`${vehicle.id}.features`), vehicle.features),
+    petFriendly: form.get(`${vehicle.id}.petFriendly`) === "true",
+  }));
+}
+
+function updateVehicleImages(vehicleId, nextImages) {
+  const cleanImages = normalizeImages(nextImages);
+  if (!cleanImages.length) {
+    window.alert("O motorhome precisa ter pelo menos uma foto.");
+    return;
+  }
+
+  catalog = catalog.map((vehicle) => {
+    if (vehicle.id !== vehicleId) return vehicle;
+    return { ...vehicle, images: cleanImages };
+  });
+
+  saveCatalog();
+  renderFleet();
+  renderCompareTable();
+  populateVehicleSelect();
+  renderCatalogEditor();
+}
+
+function handlePhotoAction(button) {
+  syncCatalogFromEditor();
+
+  const vehicleId = button.dataset.photoVehicle;
+  const vehicle = catalog.find((item) => item.id === vehicleId);
+  if (!vehicle) return;
+
+  const images = getVehicleImages(vehicle);
+  const index = Number(button.dataset.photoIndex);
+  const action = button.dataset.photoAction;
+
+  if (action === "remove") {
+    if (images.length === 1) {
+      window.alert("Cadastre outra foto antes de remover a única imagem deste motorhome.");
+      return;
+    }
+    updateVehicleImages(vehicleId, images.filter((_, itemIndex) => itemIndex !== index));
+    return;
+  }
+
+  if (action === "cover") {
+    updateVehicleImages(vehicleId, moveArrayItem(images, index, 0));
+    return;
+  }
+
+  if (action === "left") {
+    updateVehicleImages(vehicleId, moveArrayItem(images, index, Math.max(0, index - 1)));
+    return;
+  }
+
+  if (action === "right") {
+    updateVehicleImages(vehicleId, moveArrayItem(images, index, Math.min(images.length - 1, index + 1)));
+  }
+}
+
+function addPhotoUrl(vehicleId) {
+  const input = catalogEditor.querySelector(`[data-photo-url="${cssEscape(vehicleId)}"]`);
+  const value = input ? clean(input.value, "") : "";
+  if (!value) return;
+
+  syncCatalogFromEditor();
+  const vehicle = catalog.find((item) => item.id === vehicleId);
+  if (!vehicle) return;
+
+  updateVehicleImages(vehicleId, [...getVehicleImages(vehicle), value]);
+}
+
+async function addPhotoFiles(vehicleId, files) {
+  const imageFiles = Array.from(files).filter((file) => file.type.startsWith("image/"));
+  if (!imageFiles.length) {
+    window.alert("Selecione arquivos de imagem.");
+    return;
+  }
+
+  syncCatalogFromEditor();
+  const vehicle = catalog.find((item) => item.id === vehicleId);
+  if (!vehicle) return;
+
+  try {
+    const uploadedImages = await Promise.all(imageFiles.map(readFileAsDataUrl));
+    updateVehicleImages(vehicleId, [...getVehicleImages(vehicle), ...uploadedImages]);
+  } catch {
+    window.alert("Não foi possível importar uma ou mais fotos.");
+  }
+}
+
+function movePhoto(vehicleId, fromIndex, toIndex) {
+  syncCatalogFromEditor();
+  const vehicle = catalog.find((item) => item.id === vehicleId);
+  if (!vehicle || fromIndex === toIndex) return;
+
+  updateVehicleImages(vehicleId, moveArrayItem(getVehicleImages(vehicle), fromIndex, toIndex));
+}
+
+function moveArrayItem(items, fromIndex, toIndex) {
+  const next = [...items];
+  const [item] = next.splice(fromIndex, 1);
+  next.splice(toIndex, 0, item);
+  return next;
+}
+
+function readFileAsDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.addEventListener("load", () => resolve(String(reader.result)));
+    reader.addEventListener("error", reject);
+    reader.readAsDataURL(file);
+  });
+}
+
+function normalizeImages(images) {
+  return images.map((image) => String(image || "").trim()).filter(Boolean);
+}
+
+function shortenImageLabel(image) {
+  const text = String(image || "");
+  if (text.startsWith("data:image/")) return "Imagem importada";
+  const parts = text.split("/");
+  const label = parts[parts.length - 1] || text;
+  return label.length > 34 ? `${label.slice(0, 31)}...` : label;
+}
+
+function cssEscape(value) {
+  if (window.CSS?.escape) return CSS.escape(value);
+  return String(value).replaceAll('"', '\\"');
 }
 
 function parseImages(value, fallback) {
