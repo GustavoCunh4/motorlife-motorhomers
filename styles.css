@@ -1194,9 +1194,10 @@ textarea:focus {
 .catalog-editor {
   height: calc(100vh - 86px);
   overflow: auto;
+  overscroll-behavior: contain;
   align-content: start;
   gap: 22px;
-  padding: 24px clamp(18px, 4vw, 48px) 108px;
+  padding: 24px clamp(18px, 4vw, 48px) 48px;
 }
 
 .editor-intro {
@@ -1802,7 +1803,7 @@ textarea:focus {
 
   .catalog-editor {
     height: calc(100vh - 120px);
-    padding: 16px 14px 80px;
+    padding: 16px 14px 32px;
     gap: 16px;
   }
 
