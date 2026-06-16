@@ -1453,8 +1453,6 @@ textarea:focus {
 }
 
 .editor-actions {
-  position: sticky;
-  bottom: 0;
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
@@ -1462,8 +1460,7 @@ textarea:focus {
   margin: 0 calc(clamp(18px, 4vw, 48px) * -1);
   padding: 16px clamp(18px, 4vw, 48px);
   border-top: 1px solid rgba(1, 84, 80, 0.14);
-  background: rgba(250, 248, 243, 0.96);
-  backdrop-filter: blur(14px);
+  background: var(--cream);
 }
 
 .editor-card-footer {

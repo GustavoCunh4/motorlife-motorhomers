@@ -646,29 +646,6 @@ function setupAdmin() {
       return;
     }
 
-    const reset = event.target.closest("[data-reset-catalog]");
-    if (!reset) return;
-
-    if (!window.confirm("Restaurar o catálogo original? Isso apaga todas as edições salvas.")) return;
-
-    catalog = normalizeCatalog(defaultCatalog);
-    activeFilter = "all";
-    document.querySelectorAll("[data-filter]").forEach((button) => {
-      button.classList.toggle("active", button.dataset.filter === "all");
-    });
-    renderFleet();
-    renderCompareTable();
-    populateVehicleSelect();
-
-    const ok = await saveCatalogToServer();
-    renderCatalogEditor();
-    if (ok) {
-      const status = catalogEditor.querySelector("[data-save-status]");
-      if (status) {
-        status.textContent = "✓ Catálogo original restaurado! O site atualiza em ~1 minuto.";
-        status.className = "save-status success";
-      }
-    }
   });
 
   catalogEditor.addEventListener("change", (event) => {
@@ -742,7 +719,6 @@ function renderCatalogEditor() {
     <div class="editor-actions">
       <span class="save-status" data-save-status></span>
       <button class="btn primary" type="submit" data-save-btn>Salvar catálogo</button>
-      <button class="btn secondary" type="button" data-reset-catalog>Restaurar original</button>
     </div>
   `;
 }
