@@ -1,7 +1,5 @@
 const WHATSAPP_NUMBER = "5551993426537";
 const INSTAGRAM_URL = "https://instagram.com/motorlife_rs";
-const ADMIN_PIN = "6537";
-const STORAGE_KEY = "motorlife.catalog.v1";
 
 const defaultFeatures = [
   "Cozinha equipada",
@@ -99,8 +97,9 @@ const currency = new Intl.NumberFormat("pt-BR", {
   maximumFractionDigits: 0,
 });
 
-let catalog = loadCatalog();
+let catalog = [];
 let activeFilter = "all";
+let sessionPin = null;
 
 const fleetGrid = document.querySelector("[data-fleet-grid]");
 const quoteForm = document.querySelector("[data-quote-form]");
@@ -133,8 +132,9 @@ let activeDetailsVehicleId = null;
 
 init();
 
-function init() {
+async function init() {
   wireLinks();
+  await initCatalog();
   populateVehicleSelect();
   renderFleet();
   renderCompareTable();
@@ -147,26 +147,58 @@ function init() {
   setupRouteQuotes();
 }
 
-function loadCatalog() {
-  const saved = localStorage.getItem(STORAGE_KEY);
-
-  if (!saved) {
-    return normalizeCatalog(defaultCatalog);
-  }
-
+async function initCatalog() {
   try {
-    const parsed = JSON.parse(saved);
-    if (!Array.isArray(parsed)) {
-      return normalizeCatalog(defaultCatalog);
-    }
-    return normalizeCatalog(parsed);
+    const res = await fetch("/catalog.json");
+    if (!res.ok) throw new Error("fetch failed");
+    const data = await res.json();
+    catalog = normalizeCatalog(data);
   } catch {
-    return normalizeCatalog(defaultCatalog);
+    catalog = normalizeCatalog(defaultCatalog);
   }
 }
 
-function saveCatalog() {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(catalog));
+async function saveCatalogToServer() {
+  const saveBtn = catalogEditor.querySelector("[data-save-btn]");
+  const status = catalogEditor.querySelector("[data-save-status]");
+
+  if (saveBtn) saveBtn.disabled = true;
+  if (status) {
+    status.textContent = "Salvando…";
+    status.className = "save-status saving";
+  }
+
+  try {
+    const res = await fetch("/api/catalog", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ pin: sessionPin, catalog }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      if (status) {
+        status.textContent = data.error || "Erro ao salvar.";
+        status.className = "save-status error";
+      }
+      if (saveBtn) saveBtn.disabled = false;
+      return false;
+    }
+
+    if (status) {
+      status.textContent = "✓ Salvo! O site atualiza em ~1 minuto.";
+      status.className = "save-status success";
+    }
+    return true;
+  } catch {
+    if (status) {
+      status.textContent = "Erro de conexão. Tente novamente.";
+      status.className = "save-status error";
+    }
+    if (saveBtn) saveBtn.disabled = false;
+    return false;
+  }
 }
 
 function normalizeCatalog(items) {
@@ -509,6 +541,7 @@ function setupAdmin() {
     pinForm.hidden = false;
     catalogEditor.hidden = true;
     pinForm.reset();
+    sessionPin = null;
   });
 
   adminCloseButtons.forEach((button) => {
@@ -518,29 +551,30 @@ function setupAdmin() {
   pinForm.addEventListener("submit", (event) => {
     event.preventDefault();
     const pin = new FormData(pinForm).get("pin");
-    if (pin !== ADMIN_PIN) {
-      pinForm.querySelector("input").setCustomValidity("PIN inválido");
-      pinForm.reportValidity();
-      pinForm.querySelector("input").setCustomValidity("");
-      return;
-    }
-
+    sessionPin = pin;
     pinForm.hidden = true;
     catalogEditor.hidden = false;
     renderCatalogEditor();
   });
 
-  catalogEditor.addEventListener("submit", (event) => {
+  catalogEditor.addEventListener("submit", async (event) => {
     event.preventDefault();
     syncCatalogFromEditor();
-    saveCatalog();
-    renderFleet();
-    renderCompareTable();
-    populateVehicleSelect();
-    renderCatalogEditor();
+    const ok = await saveCatalogToServer();
+    if (ok) {
+      renderFleet();
+      renderCompareTable();
+      populateVehicleSelect();
+      renderCatalogEditor();
+      const status = catalogEditor.querySelector("[data-save-status]");
+      if (status) {
+        status.textContent = "✓ Salvo! O site atualiza em ~1 minuto.";
+        status.className = "save-status success";
+      }
+    }
   });
 
-  catalogEditor.addEventListener("click", (event) => {
+  catalogEditor.addEventListener("click", async (event) => {
     const add = event.target.closest("[data-add-catalog]");
     if (add) {
       syncCatalogFromEditor();
@@ -558,7 +592,6 @@ function setupAdmin() {
         profile: "Descreva o perfil ideal deste motorhome.",
         features: defaultFeatures,
       });
-      saveCatalog();
       renderFleet();
       renderCompareTable();
       populateVehicleSelect();
@@ -570,7 +603,6 @@ function setupAdmin() {
     if (remove) {
       syncCatalogFromEditor();
       catalog = catalog.filter((vehicle) => vehicle.id !== remove.dataset.removeCatalog);
-      saveCatalog();
       renderFleet();
       renderCompareTable();
       populateVehicleSelect();
@@ -604,7 +636,6 @@ function setupAdmin() {
         const imported = JSON.parse(raw);
         if (!Array.isArray(imported)) throw new Error("JSON precisa ser uma lista.");
         catalog = normalizeCatalog(imported);
-        saveCatalog();
         renderFleet();
         renderCompareTable();
         populateVehicleSelect();
@@ -618,8 +649,9 @@ function setupAdmin() {
     const reset = event.target.closest("[data-reset-catalog]");
     if (!reset) return;
 
-    catalog = structuredClone(defaultCatalog);
-    localStorage.removeItem(STORAGE_KEY);
+    if (!window.confirm("Restaurar o catálogo original? Isso apaga todas as edições salvas.")) return;
+
+    catalog = normalizeCatalog(defaultCatalog);
     activeFilter = "all";
     document.querySelectorAll("[data-filter]").forEach((button) => {
       button.classList.toggle("active", button.dataset.filter === "all");
@@ -627,7 +659,16 @@ function setupAdmin() {
     renderFleet();
     renderCompareTable();
     populateVehicleSelect();
+
+    const ok = await saveCatalogToServer();
     renderCatalogEditor();
+    if (ok) {
+      const status = catalogEditor.querySelector("[data-save-status]");
+      if (status) {
+        status.textContent = "✓ Catálogo original restaurado! O site atualiza em ~1 minuto.";
+        status.className = "save-status success";
+      }
+    }
   });
 
   catalogEditor.addEventListener("change", (event) => {
@@ -699,7 +740,8 @@ function renderCatalogEditor() {
       ${catalog.map(renderEditorCard).join("")}
     </div>
     <div class="editor-actions">
-      <button class="btn primary" type="submit">Salvar catálogo</button>
+      <span class="save-status" data-save-status></span>
+      <button class="btn primary" type="submit" data-save-btn>Salvar catálogo</button>
       <button class="btn secondary" type="button" data-reset-catalog>Restaurar original</button>
     </div>
   `;
@@ -860,7 +902,6 @@ function updateVehicleImages(vehicleId, nextImages) {
     return { ...vehicle, images: cleanImages };
   });
 
-  saveCatalog();
   renderFleet();
   renderCompareTable();
   populateVehicleSelect();

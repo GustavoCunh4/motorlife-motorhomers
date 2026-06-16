@@ -1,0 +1,80 @@
+[
+  {
+    "id": "cardeal",
+    "name": "Cardeal",
+    "price": 799,
+    "model": "Sprinter Mercedes-Benz",
+    "passengers": 4,
+    "license": "CNH B",
+    "petFriendly": true,
+    "travel": "Viagens nacionais e internacionais",
+    "images": ["assets/cardeal.jpeg"],
+    "profile": "Viagens de casal ou família pequena que priorizam interior confortável e rotina prática.",
+    "features": ["Cozinha equipada", "Ambiente interno aconchegante", "Ideal para 4 passageiros", "Pet friendly"]
+  },
+  {
+    "id": "garca",
+    "name": "Garça",
+    "price": 979,
+    "model": "Sprinter Mercedes-Benz",
+    "passengers": 4,
+    "license": "CNH B",
+    "petFriendly": true,
+    "travel": "Viagens nacionais e internacionais",
+    "images": ["assets/garca.jpeg"],
+    "profile": "Roteiros de 3 a 7 dias com conforto interno, boa circulação e capacidade para 4 passageiros.",
+    "features": ["Layout funcional", "Mesa interna", "Cozinha compacta", "Pet friendly"]
+  },
+  {
+    "id": "andorinha",
+    "name": "Andorinha",
+    "price": 979,
+    "model": "Ford Transit - Câmbio automático",
+    "passengers": 5,
+    "license": "CNH B",
+    "petFriendly": true,
+    "travel": "Viagens nacionais e internacionais",
+    "images": ["assets/andorinha.jpeg"],
+    "profile": "Quem quer dirigir com mais facilidade e conforto em percursos longos, com câmbio automático.",
+    "features": ["Câmbio automático", "5 passageiros", "Boa opção para famílias", "Pet friendly"]
+  },
+  {
+    "id": "aguia",
+    "name": "Águia",
+    "price": 1250,
+    "model": "Mercedes-Benz Sprinter 516",
+    "passengers": 6,
+    "license": "CNH B",
+    "petFriendly": true,
+    "travel": "Viagens nacionais e internacionais",
+    "images": ["assets/aguia.jpeg"],
+    "profile": "Grupos maiores ou famílias que precisam de mais espaço e capacidade para até 6 passageiros.",
+    "features": ["Maior capacidade da frota", "Mercedes-Benz Sprinter 516", "Perfil robusto", "Pet friendly"]
+  },
+  {
+    "id": "arara",
+    "name": "Arara",
+    "price": 979,
+    "model": "Sprinter Mercedes-Benz",
+    "passengers": 5,
+    "license": "CNH B",
+    "petFriendly": true,
+    "travel": "Viagens nacionais e internacionais",
+    "images": ["assets/arara.jpeg"],
+    "profile": "Viagens com até 5 pessoas, boa autonomia e perfil versátil para roteiros nacionais e internacionais.",
+    "features": ["5 passageiros", "Sprinter Mercedes-Benz", "Boa relação entre espaço e valor", "Pet friendly"]
+  },
+  {
+    "id": "flamingo",
+    "name": "Flamingo",
+    "price": 879,
+    "model": "Peugeot Boxer",
+    "passengers": 4,
+    "license": "CNH B",
+    "petFriendly": true,
+    "travel": "Viagens nacionais e internacionais",
+    "images": ["assets/flamingo.jpeg"],
+    "profile": "Viagens compactas para até 4 passageiros, com valor base competitivo e boa mobilidade.",
+    "features": ["Peugeot Boxer", "4 passageiros", "Valor base competitivo", "Pet friendly"]
+  }
+]
