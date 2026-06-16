@@ -622,30 +622,6 @@ function setupAdmin() {
       return;
     }
 
-    const exportButton = event.target.closest("[data-export-catalog]");
-    if (exportButton) {
-      downloadCatalog();
-      return;
-    }
-
-    const importButton = event.target.closest("[data-import-catalog]");
-    if (importButton) {
-      const raw = window.prompt("Cole aqui o JSON exportado do catálogo:");
-      if (!raw) return;
-      try {
-        const imported = JSON.parse(raw);
-        if (!Array.isArray(imported)) throw new Error("JSON precisa ser uma lista.");
-        catalog = normalizeCatalog(imported);
-        renderFleet();
-        renderCompareTable();
-        populateVehicleSelect();
-        renderCatalogEditor();
-      } catch {
-        window.alert("Não foi possível importar o catálogo. Verifique o JSON.");
-      }
-      return;
-    }
-
   });
 
   catalogEditor.addEventListener("change", (event) => {
@@ -702,23 +678,19 @@ function renderCatalogEditor() {
   const totalPhotos = catalog.reduce((total, vehicle) => total + getVehicleImages(vehicle).length, 0);
 
   catalogEditor.innerHTML = `
-    <div class="editor-intro">
-      <div>
-        <strong>${catalog.length} motorhomes</strong>
-        <span>${totalPhotos} fotos cadastradas</span>
-      </div>
-      <div class="editor-intro-actions">
-        <button class="btn primary" type="button" data-add-catalog>Adicionar motorhome</button>
-        <button class="btn secondary" type="button" data-export-catalog>Exportar JSON</button>
-        <button class="btn secondary" type="button" data-import-catalog>Importar JSON</button>
-      </div>
+    <div class="editor-summary">
+      <strong>${catalog.length} motorhome${catalog.length !== 1 ? "s" : ""} no catálogo</strong>
+      <span>${totalPhotos} foto${totalPhotos !== 1 ? "s" : ""} cadastrada${totalPhotos !== 1 ? "s" : ""}</span>
     </div>
     <div class="editor-list">
       ${catalog.map(renderEditorCard).join("")}
     </div>
     <div class="editor-actions">
-      <span class="save-status" data-save-status></span>
-      <button class="btn primary" type="submit" data-save-btn>Salvar catálogo</button>
+      <button class="btn secondary" type="button" data-add-catalog>+ Adicionar motorhome</button>
+      <div class="editor-actions-right">
+        <span class="save-status" data-save-status></span>
+        <button class="btn primary" type="submit" data-save-btn>Salvar catálogo</button>
+      </div>
     </div>
   `;
 }
@@ -1004,15 +976,6 @@ function parseLines(value, fallback) {
   return lines.length ? lines : fallback;
 }
 
-function downloadCatalog() {
-  const blob = new Blob([JSON.stringify(catalog, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = "motorlife-catalogo.json";
-  link.click();
-  URL.revokeObjectURL(url);
-}
 
 function clean(value, fallback) {
   const text = String(value || "").trim();

@@ -1200,15 +1200,26 @@ textarea:focus {
   padding: 24px clamp(18px, 4vw, 48px) 48px;
 }
 
-.editor-intro {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  padding: 16px;
+.editor-summary {
+  padding: 14px 18px;
   border: 1px solid rgba(1, 84, 80, 0.14);
   border-radius: var(--radius);
   background: var(--white);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.editor-summary strong {
+  color: var(--green-900);
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.editor-summary span {
+  color: var(--muted);
+  font-size: 0.88rem;
+  font-weight: 700;
 }
 
 .editor-list {
@@ -1216,24 +1227,6 @@ textarea:focus {
   gap: 22px;
 }
 
-.editor-intro-actions {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 10px;
-}
-
-.editor-intro strong,
-.editor-intro span {
-  display: block;
-}
-
-.editor-intro strong {
-  color: var(--green-900);
-  font-size: 1.2rem;
-}
-
-.editor-intro span,
 .editor-title p,
 .photos-field small {
   color: var(--muted);
@@ -1455,13 +1448,19 @@ textarea:focus {
 
 .editor-actions {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-  gap: 10px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
   margin: 0 calc(clamp(18px, 4vw, 48px) * -1);
-  padding: 16px clamp(18px, 4vw, 48px);
+  padding: 20px clamp(18px, 4vw, 48px);
   border-top: 1px solid rgba(1, 84, 80, 0.14);
   background: var(--cream);
+}
+
+.editor-actions-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .editor-card-footer {
@@ -1827,13 +1826,17 @@ textarea:focus {
     grid-template-columns: 1fr;
   }
 
-  .editor-intro {
-    align-items: stretch;
+  .editor-actions {
     flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
   }
 
-  .editor-intro-actions,
-  .editor-actions,
+  .editor-actions-right {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
   .editor-card-footer {
     display: grid;
     justify-content: stretch;
