@@ -118,27 +118,5 @@
       "Valor base competitivo",
       "Pet friendly"
     ]
-  },
-  {
-    "id": "novo-1782321489634",
-    "name": "Novo motorhome",
-    "price": 0,
-    "model": "Modelo do veículo",
-    "passengers": 4,
-    "license": "CNH B",
-    "petFriendly": true,
-    "travel": "Viagens nacionais e internacionais",
-    "images": [
-      "assets/arara.jpeg"
-    ],
-    "profile": "Descreva o perfil ideal deste motorhome.",
-    "features": [
-      "Cozinha equipada",
-      "Espaço de descanso",
-      "Pet friendly",
-      "CNH B",
-      "Viagens nacionais e internacionais",
-      "Briefing de retirada"
-    ]
   }
 ]
