@@ -1,5 +1,7 @@
-const WHATSAPP_NUMBER = "5551993426537";
-const INSTAGRAM_URL = "https://instagram.com/motorlife_rs";
+const defaultSiteConfig = {
+  whatsappNumber: "5551993426537",
+  instagramUrl: "https://instagram.com/motorlife_rs",
+};
 
 const defaultFeatures = [
   "Cozinha equipada",
@@ -99,7 +101,8 @@ const currency = new Intl.NumberFormat("pt-BR", {
 
 let catalog = [];
 let activeFilter = "all";
-let sessionPin = null;
+let siteConfig = structuredClone(defaultSiteConfig);
+let adminToken = null;
 
 const fleetGrid = document.querySelector("[data-fleet-grid]");
 const quoteForm = document.querySelector("[data-quote-form]");
@@ -133,8 +136,9 @@ let activeDetailsVehicleId = null;
 init();
 
 async function init() {
-  wireLinks();
+  await initSiteConfig();
   await initCatalog();
+  wireLinks();
   populateVehicleSelect();
   renderFleet();
   renderCompareTable();
@@ -147,9 +151,19 @@ async function init() {
   setupRouteQuotes();
 }
 
+async function initSiteConfig() {
+  try {
+    const res = await fetch(`/site-config.json?v=${Date.now()}`, { cache: "no-store" });
+    if (!res.ok) throw new Error("config fetch failed");
+    siteConfig = normalizeSiteConfig(await res.json());
+  } catch {
+    siteConfig = structuredClone(defaultSiteConfig);
+  }
+}
+
 async function initCatalog() {
   try {
-    const res = await fetch("/catalog.json");
+    const res = await fetch(`/catalog.json?v=${Date.now()}`, { cache: "no-store" });
     if (!res.ok) throw new Error("fetch failed");
     const data = await res.json();
     catalog = normalizeCatalog(data);
@@ -171,13 +185,19 @@ async function saveCatalogToServer() {
   try {
     const res = await fetch("/api/catalog", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ pin: sessionPin, catalog }),
+      headers: {
+        "Authorization": `Bearer ${adminToken || ""}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ catalog, config: siteConfig }),
     });
 
     const data = await res.json();
 
     if (!res.ok) {
+      if (res.status === 401) {
+        adminToken = null;
+      }
       if (status) {
         status.textContent = data.error || "Erro ao salvar.";
         status.className = "save-status error";
@@ -223,14 +243,30 @@ function normalizeCatalog(items) {
   });
 }
 
+function normalizeSiteConfig(config) {
+  const whatsappNumber = String(config?.whatsappNumber || defaultSiteConfig.whatsappNumber)
+    .replace(/\D/g, "")
+    .slice(0, 20);
+  const instagramUrl = clean(config?.instagramUrl, defaultSiteConfig.instagramUrl);
+
+  return {
+    whatsappNumber: whatsappNumber || defaultSiteConfig.whatsappNumber,
+    instagramUrl,
+  };
+}
+
 function wireLinks() {
   document.querySelectorAll("[data-whatsapp-link]").forEach((link) => {
     link.href = buildWhatsAppUrl("Olá! Vi o site da Motorlife Motorhomers e gostaria de um orçamento.");
   });
+
+  document.querySelectorAll("[data-whatsapp-number]").forEach((element) => {
+    element.textContent = formatPhone(siteConfig.whatsappNumber);
+  });
 }
 
 function buildWhatsAppUrl(message) {
-  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+  return `https://wa.me/${siteConfig.whatsappNumber}?text=${encodeURIComponent(message)}`;
 }
 
 function renderFleet() {
@@ -541,24 +577,49 @@ function setupAdmin() {
     pinForm.hidden = false;
     catalogEditor.hidden = true;
     pinForm.reset();
-    sessionPin = null;
+    adminToken = null;
+    setLoginStatus("");
   });
 
   adminCloseButtons.forEach((button) => {
     button.addEventListener("click", () => adminDialog.close());
   });
 
-  pinForm.addEventListener("submit", (event) => {
+  pinForm.addEventListener("submit", async (event) => {
     event.preventDefault();
-    const pin = new FormData(pinForm).get("pin");
-    sessionPin = pin;
-    pinForm.hidden = true;
-    catalogEditor.hidden = false;
-    renderCatalogEditor();
+    const password = new FormData(pinForm).get("password");
+    const button = pinForm.querySelector("button[type='submit']");
+
+    if (button) button.disabled = true;
+    setLoginStatus("Validando acesso...");
+
+    try {
+      const res = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password }),
+      });
+      const data = await res.json();
+
+      if (!res.ok || !data.token) {
+        setLoginStatus(data.error || "Nao foi possivel entrar.");
+        return;
+      }
+
+      adminToken = data.token;
+      pinForm.hidden = true;
+      catalogEditor.hidden = false;
+      renderCatalogEditor();
+    } catch {
+      setLoginStatus("Erro de conexao. Tente novamente.");
+    } finally {
+      if (button) button.disabled = false;
+    }
   });
 
   catalogEditor.addEventListener("submit", async (event) => {
     event.preventDefault();
+    syncSiteConfigFromEditor();
     syncCatalogFromEditor();
     const ok = await saveCatalogToServer();
     if (ok) {
@@ -577,6 +638,7 @@ function setupAdmin() {
   catalogEditor.addEventListener("click", async (event) => {
     const add = event.target.closest("[data-add-catalog]");
     if (add) {
+      syncSiteConfigFromEditor();
       syncCatalogFromEditor();
       const id = `novo-${Date.now()}`;
       catalog.push({
@@ -601,6 +663,7 @@ function setupAdmin() {
 
     const remove = event.target.closest("[data-remove-catalog]");
     if (remove) {
+      syncSiteConfigFromEditor();
       syncCatalogFromEditor();
       catalog = catalog.filter((vehicle) => vehicle.id !== remove.dataset.removeCatalog);
       renderFleet();
@@ -674,6 +737,13 @@ function setupAdmin() {
   });
 }
 
+function setLoginStatus(message) {
+  const status = pinForm.querySelector("[data-login-status]");
+  if (status) {
+    status.textContent = message;
+  }
+}
+
 function renderCatalogEditor() {
   const totalPhotos = catalog.reduce((total, vehicle) => total + getVehicleImages(vehicle).length, 0);
 
@@ -682,6 +752,17 @@ function renderCatalogEditor() {
       <strong>${catalog.length} motorhome${catalog.length !== 1 ? "s" : ""} no catálogo</strong>
       <span>${totalPhotos} foto${totalPhotos !== 1 ? "s" : ""} cadastrada${totalPhotos !== 1 ? "s" : ""}</span>
     </div>
+    <section class="admin-settings">
+      <div>
+        <span>Configura&ccedil;&otilde;es do site</span>
+        <strong>Contato principal</strong>
+      </div>
+      <label>
+        WhatsApp de atendimento
+        <input name="settings.whatsappNumber" inputmode="tel" value="${escapeHtml(formatPhone(siteConfig.whatsappNumber))}" placeholder="55 51 9 9342-6537" required>
+      </label>
+      <small>Use DDI, DDD e n&uacute;mero. Exemplo: 55 51 9 9342-6537.</small>
+    </section>
     <div class="editor-list">
       ${catalog.map(renderEditorCard).join("")}
     </div>
@@ -816,6 +897,17 @@ function renderEditorPhoto(vehicle, image, index, total) {
       </div>
     </article>
   `;
+}
+
+function syncSiteConfigFromEditor() {
+  if (catalogEditor.hidden) return;
+
+  const form = new FormData(catalogEditor);
+  siteConfig = normalizeSiteConfig({
+    ...siteConfig,
+    whatsappNumber: form.get("settings.whatsappNumber"),
+  });
+  wireLinks();
 }
 
 function syncCatalogFromEditor() {
@@ -980,6 +1072,17 @@ function parseLines(value, fallback) {
 function clean(value, fallback) {
   const text = String(value || "").trim();
   return text || fallback;
+}
+
+function formatPhone(value) {
+  const digits = String(value || "").replace(/\D/g, "");
+  if (digits.length === 13 && digits.startsWith("55")) {
+    return `+${digits.slice(0, 2)} ${digits.slice(2, 4)} ${digits.slice(4, 5)} ${digits.slice(5, 9)}-${digits.slice(9)}`;
+  }
+  if (digits.length === 11) {
+    return `${digits.slice(0, 2)} ${digits.slice(2, 3)} ${digits.slice(3, 7)}-${digits.slice(7)}`;
+  }
+  return digits || value;
 }
 
 function escapeHtml(value) {

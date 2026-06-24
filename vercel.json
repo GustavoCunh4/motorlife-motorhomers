@@ -7,7 +7,7 @@
   "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/((?!assets/|app\\.js|styles\\.css|catalog\\.json|favicon\\.ico|api/).*)",
+      "source": "/((?!assets/|app\\.js|styles\\.css|catalog\\.json|site-config\\.json|favicon\\.ico|api/).*)",
       "destination": "/index.html"
     }
   ],

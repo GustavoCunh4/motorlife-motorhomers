@@ -402,6 +402,7 @@
         </div>
         <div class="contact-actions">
           <a class="btn primary" data-whatsapp-link href="#" target="_blank" rel="noreferrer">Chamar no WhatsApp</a>
+          <span class="contact-phone" data-whatsapp-number></span>
           <a class="btn secondary" href="https://instagram.com/motorlife_rs" target="_blank" rel="noreferrer">Instagram @motorlife_rs</a>
         </div>
       </section>
@@ -433,9 +434,10 @@
         </div>
         <form class="pin-form" data-pin-form>
           <label>
-            PIN de acesso
-            <input type="password" name="pin" inputmode="numeric" placeholder="Digite o PIN" required />
+            Senha de acesso
+            <input type="password" name="password" autocomplete="current-password" placeholder="Digite a senha" required />
           </label>
+          <span class="login-status" data-login-status></span>
           <button class="btn primary" type="submit">Entrar</button>
         </form>
         <form class="catalog-editor" data-catalog-editor hidden></form>
