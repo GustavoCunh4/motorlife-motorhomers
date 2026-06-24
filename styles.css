@@ -1751,6 +1751,15 @@ textarea:focus {
     min-height: 44px;
   }
 
+  .quick-quote input[type="date"] {
+    width: calc(100% - 24px);
+    max-width: calc(100% - 24px);
+    min-width: 0;
+    justify-self: start;
+    appearance: none;
+    -webkit-appearance: none;
+  }
+
   .trust-band {
     grid-template-columns: repeat(2, 1fr);
   }
