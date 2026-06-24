@@ -13,10 +13,8 @@ export default async function handler(req, res) {
     const catalog = normalizeCatalog(req.body?.catalog);
     const config = normalizeConfig(req.body?.config);
 
-    await Promise.all([
-      updateGithubFile("catalog.json", JSON.stringify(catalog, null, 2) + "\n", "Atualizar catalogo via admin"),
-      updateGithubFile("site-config.json", JSON.stringify(config, null, 2) + "\n", "Atualizar configuracoes do site via admin"),
-    ]);
+    await updateGithubFile("catalog.json", JSON.stringify(catalog, null, 2) + "\n", "Atualizar catalogo via admin");
+    await updateGithubFile("site-config.json", JSON.stringify(config, null, 2) + "\n", "Atualizar configuracoes do site via admin");
 
     return res.status(200).json({ ok: true });
   } catch (error) {
