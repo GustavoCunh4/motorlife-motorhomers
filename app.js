@@ -149,6 +149,8 @@ async function init() {
   setupGallery();
   setupDetails();
   setupRouteQuotes();
+  setupReveal();
+  setupNavHighlight();
 }
 
 async function initSiteConfig() {
@@ -1083,6 +1085,54 @@ function formatPhone(value) {
     return `${digits.slice(0, 2)} ${digits.slice(2, 3)} ${digits.slice(3, 7)}-${digits.slice(7)}`;
   }
   return digits || value;
+}
+
+function setupReveal() {
+  const targets = document.querySelectorAll(
+    ".trust-band, .origin-section, .fleet-section, .compare-section, .split, .included-section, .routes, .faq, .contact-section"
+  );
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    { threshold: 0.08 }
+  );
+
+  targets.forEach((el) => {
+    el.classList.add("reveal");
+    observer.observe(el);
+  });
+}
+
+function setupNavHighlight() {
+  const navLinks = document.querySelectorAll(".main-nav a[href^='#']");
+  const sectionIds = Array.from(navLinks).map((link) => link.getAttribute("href").slice(1));
+  const sections = sectionIds
+    .map((id) => document.getElementById(id))
+    .filter(Boolean);
+
+  if (!sections.length) return;
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const id = entry.target.id;
+        navLinks.forEach((link) => {
+          link.classList.toggle("nav-active", link.getAttribute("href") === `#${id}`);
+        });
+      });
+    },
+    { rootMargin: "-30% 0px -60% 0px" }
+  );
+
+  sections.forEach((section) => observer.observe(section));
 }
 
 function escapeHtml(value) {
